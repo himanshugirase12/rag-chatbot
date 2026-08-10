@@ -15,10 +15,10 @@ app.get('/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 const authRoutes = require('./routes/authRoutes');
-
+const documentRoutes = require('./routes/documentRoutes');
 
 app.use('/api/auth', authRoutes);
-
+app.use('/api/documents', documentRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
