@@ -1,4 +1,5 @@
 const Document = require('../models/Document');
+const ingestDocument = require('../utils/ingestDocument');
 
 const uploadDocument = async (req, res) => {
   try {
@@ -15,9 +16,7 @@ const uploadDocument = async (req, res) => {
 
     res.status(201).json({ document });
 
-    // Ingestion pipeline (parse -> chunk -> embed -> store) will be
-    // triggered here in Phase 2 — for now the file just gets saved
-    // and marked "processing"
+    ingestDocument(document._id, req.file.path, req.userId);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -32,4 +31,4 @@ const getMyDocuments = async (req, res) => {
   }
 };
 
-module.exports = { uploadDocument, getMyDocuments };    
+module.exports = { uploadDocument, getMyDocuments };
