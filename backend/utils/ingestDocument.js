@@ -7,6 +7,13 @@ const Document = require('../models/Document');
 const ingestDocument = async (documentId, filePath, ownerId) => {
   try {
     const text = await parseDocument(filePath);
+
+    if (!text || text.trim().length < 50) {
+      await Document.findByIdAndUpdate(documentId, { status: 'failed' });
+      console.log(`Document ${documentId} has no extractable text (likely scanned/image PDF)`);
+      return;
+    }
+
     const chunks = chunkText(text);
 
     for (const chunkContent of chunks) {

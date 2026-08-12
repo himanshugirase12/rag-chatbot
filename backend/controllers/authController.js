@@ -59,4 +59,13 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const upgradeToPro = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.userId, { plan: 'pro' }, { new: true });
+    res.json({ message: 'Upgraded to Pro!', user: { id: user._id, plan: user.plan } });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { register, login, upgradeToPro };
