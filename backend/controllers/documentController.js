@@ -22,7 +22,7 @@ const uploadDocument = async (req, res) => {
 
     res.status(201).json({ document, remaining: usage.remaining });
 
-    ingestDocument(document._id, req.file.path, req.userId);
+    ingestDocument(document._id, req.file.path, req.userId, req.file.originalname);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

@@ -4,9 +4,9 @@ const generateEmbedding = require('./generateEmbedding');
 const Chunk = require('../models/Chunk');
 const Document = require('../models/Document');
 
-const ingestDocument = async (documentId, filePath, ownerId) => {
+const ingestDocument = async (documentId, filePath, ownerId, originalName) => {
   try {
-    const text = await parseDocument(filePath);
+    const text = await parseDocument(filePath, originalName);
 
     if (!text || text.trim().length < 50) {
       await Document.findByIdAndUpdate(documentId, { status: 'failed' });
