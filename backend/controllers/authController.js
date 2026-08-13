@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const resetIfNewDay = require('../utils/resetIfNewDay');
 
 const register = async (req, res) => {
   try {
@@ -68,4 +69,27 @@ const upgradeToPro = async (req, res) => {
   }
 };
 
-module.exports = { register, login, upgradeToPro };
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    resetIfNewDay(user);
+    await user.save();
+
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      plan: user.plan,
+      questionsToday: user.questionsToday,
+      uploadsToday: user.uploadsToday
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { register, login, upgradeToPro, getMe };

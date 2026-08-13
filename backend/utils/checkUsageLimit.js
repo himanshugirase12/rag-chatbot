@@ -1,24 +1,9 @@
 const User = require('../models/User');
+const resetIfNewDay = require('./resetIfNewDay');
 
 const FREE_LIMITS = {
   questionsPerDay: 10,
   uploadsPerDay: 10
-};
-
-const resetIfNewDay = (user) => {
-  const now = new Date();
-  const lastReset = new Date(user.usageResetAt);
-
-  const isNewDay =
-    now.getFullYear() !== lastReset.getFullYear() ||
-    now.getMonth() !== lastReset.getMonth() ||
-    now.getDate() !== lastReset.getDate();
-
-  if (isNewDay) {
-    user.questionsToday = 0;
-    user.uploadsToday = 0;
-    user.usageResetAt = now;
-  }
 };
 
 const checkAndIncrement = async (userId, type) => {
