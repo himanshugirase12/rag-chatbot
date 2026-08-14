@@ -91,4 +91,20 @@ const getMessages = async (req, res) => {
   }
 };
 
-module.exports = { askQuestion, getConversations, getMessages };
+const deleteConversation = async (req, res) => {
+  try {
+    const conversation = await Conversation.findOne({ _id: req.params.id, owner: req.userId });
+    if (!conversation) {
+      return res.status(404).json({ message: 'Conversation not found' });
+    }
+
+    await Message.deleteMany({ conversation: conversation._id });
+    await Conversation.findByIdAndDelete(conversation._id);
+
+    res.json({ message: 'Conversation deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { askQuestion, getConversations, getMessages, deleteConversation };

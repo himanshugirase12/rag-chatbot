@@ -1,6 +1,8 @@
 const Document = require('../models/Document');
 const ingestDocument = require('../utils/ingestDocument');
 const checkAndIncrement = require('../utils/checkUsageLimit');
+const cloudinary = require('../config/cloudinary');
+const Chunk = require('../models/Chunk');
 
 const uploadDocument = async (req, res) => {
   try {
@@ -37,4 +39,20 @@ const getMyDocuments = async (req, res) => {
   }
 };
 
-module.exports = { uploadDocument, getMyDocuments };
+const deleteDocument = async (req, res) => {
+  try {
+    const document = await Document.findOne({ _id: req.params.id, owner: req.userId });
+    if (!document) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+
+    await Chunk.deleteMany({ document: document._id });
+    await Document.findByIdAndDelete(document._id);
+
+    res.json({ message: 'Document deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { uploadDocument, getMyDocuments,deleteDocument};
