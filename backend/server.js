@@ -36,4 +36,3 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('MongoDB connection failed:', err);
   });
 
-// eanqz9mp6mRroI8q

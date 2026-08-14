@@ -32,7 +32,14 @@ const uploadDocument = async (req, res) => {
 
 const getMyDocuments = async (req, res) => {
   try {
-    const documents = await Document.find({ owner: req.userId }).sort({ createdAt: -1 });
+    const { search } = req.query;
+
+    const filter = { owner: req.userId };
+    if (search) {
+      filter.originalName = { $regex: search, $options: 'i' };
+    }
+
+    const documents = await Document.find(filter).sort({ createdAt: -1 });
     res.json({ documents });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
