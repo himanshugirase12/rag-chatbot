@@ -7,8 +7,28 @@ function Sidebar() {
   const navigate = useNavigate();
 
   const handleUpgrade = async () => {
-    await api.post('/auth/upgrade');
-    window.location.reload();
+    const { data } = await api.post('/payments/create-order');
+  
+    const options = {
+      key: data.keyId,
+      amount: data.order.amount,
+      currency: data.order.currency,
+      name: 'RAG AI',
+      description: 'Pro Plan Upgrade',
+      order_id: data.order.id,
+      handler: async (response) => {
+        await api.post('/payments/verify', {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+        });
+        window.location.reload();
+      },
+      theme: { color: '#7c3aed' },
+    };
+  
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   const handleLogout = () => {

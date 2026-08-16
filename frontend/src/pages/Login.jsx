@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -9,8 +10,11 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login, user } = useAuth();
+
+  useEffect(() => {
+    if (user) navigate('/');
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
