@@ -43,12 +43,9 @@ const askQuestion = async (req, res) => {
     let answer;
     let sources = [];
 
-    if (chunks.length === 0) {
-      answer = "I don't have any documents to search yet. Please upload one first.";
-    } else {
-      answer = await generateAnswer(question, chunks);
-      sources = chunks.map((c) => ({ documentId: c.document, text: c.text, score: c.score }));
-    }
+    const result = await generateAnswer(question, chunks);
+    answer = result.answer;
+    sources = result.grounded ? chunks.map((c) => ({ documentId: c.document, text: c.text, score: c.score })) : [];
 
     await Message.create({
       conversation: conversation._id,
@@ -107,4 +104,4 @@ const deleteConversation = async (req, res) => {
   }
 };
 
-module.exports = { askQuestion, getConversations, getMessages, deleteConversation };
+module.exports = { askQuestion, getConversations, getMessages, deleteConversation };  

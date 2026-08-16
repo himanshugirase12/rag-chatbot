@@ -3,21 +3,44 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const generateAnswer = async (question, chunks) => {
-  const context = chunks.map((c, i) => `[Source ${i + 1}]: ${c.text}`).join('\n\n');
+  const hasContext = chunks.length > 0;
+  const context = hasContext
+    ? chunks.map((c, i) => `[Source ${i + 1}]: ${c.text}`).join('\n\n')
+    : '';
 
-  const prompt = `You are a study assistant. Answer the question using ONLY the context below. If the question asks for an opinion or recommendation, you may summarize the relevant facts from the context to help the user decide, but do not invent facts not present in the context. If the context truly does not contain any information relevant to the question, say "I don't have enough information in your documents to answer that" instead of guessing.
+  const prompt = hasContext
+    ? `You are a study assistant. Answer the question using ONLY the context below. If the question asks for an opinion or recommendation, you may summarize the relevant facts from the context to help the user decide, but do not invent facts not present in the context. If the context truly does not contain any information relevant to the question, respond with exactly: "NO_ANSWER_IN_DOCS"
 
-  Context:
-  ${context}
-  
-  Question: ${question}
-  
-  Answer:`;
+Context:
+${context}
 
-const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
-  const result = await model.generateContent(prompt);
+Question: ${question}
 
-  return result.response.text();
+Answer:`
+    : '';
+
+  const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
+
+  if (hasContext) {
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    if (text.trim() === 'NO_ANSWER_IN_DOCS') {
+      return await generateGeneralAnswer(question, model);
+    }
+    return { answer: text, grounded: true };
+  }
+
+  return await generateGeneralAnswer(question, model);
+};
+
+const generateGeneralAnswer = async (question, model) => {
+  const result = await model.generateContent(question);
+  const text = result.response.text();
+  return {
+    answer: `⚠️ I couldn't find this in your documents, but here's what I know generally:\n\n${text}`,
+    grounded: false,
+  };
 };
 
 module.exports = generateAnswer;
