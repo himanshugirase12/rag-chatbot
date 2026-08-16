@@ -19,6 +19,21 @@ function Chat() {
     setConversations(res.data.conversations);
   };
 
+  const handleDeleteConversation = async (e, id) => {
+    e.stopPropagation();
+    if (!confirm('Delete this conversation?')) return;
+  
+    try {
+      await api.delete(`/chat/conversations/${id}`);
+      setConversations((prev) => prev.filter((c) => c._id !== id));
+      if (id === conversationId) {
+        navigate('/chat');
+      }
+    } catch (err) {
+      console.error('Failed to delete conversation', err);
+    }
+  };
+
   const fetchMessages = async (id) => {
     const res = await api.get(`/chat/conversations/${id}/messages`);
     setMessages(res.data.messages);
@@ -82,10 +97,10 @@ function Chat() {
   };
 
   return (
-    <div className="min-h-screen bg-bg flex">
+    <div className="h-screen bg-bg flex overflow-hidden">   
       <Sidebar />
 
-      <div className="w-56 border-r border-border p-4">
+      <div className="w-56 border-r border-border p-4 flex flex-col h-screen overflow-hidden">
         <button
           onClick={() => navigate('/chat')}
           className="w-full bg-accent hover:bg-accent-hover text-sm font-medium py-2.5 rounded-lg mb-4"
@@ -93,23 +108,29 @@ function Chat() {
           + New Chat
         </button>
         <div className="text-xs text-subtle mb-2 px-1">Recent conversations</div>
-        <div className="flex flex-col gap-1">
-          {conversations.map((c) => (
-            <div
-              key={c._id}
-              onClick={() => navigate(`/chat/${c._id}`)}
-              className={`text-sm px-3 py-2 rounded-lg cursor-pointer truncate ${
-                c._id === conversationId ? 'bg-panel text-white' : 'text-muted hover:bg-panel'
-              }`}
-            >
-              {c.title}
-            </div>
-          ))}
+        <div className="flex flex-col gap-1 overflow-y-auto flex-1 scrollbar-hide">
+        {conversations.map((c) => (
+  <div
+    key={c._id}
+    onClick={() => navigate(`/chat/${c._id}`)}
+    className={`group flex items-center justify-between text-sm px-3 py-2 rounded-lg cursor-pointer ${
+      c._id === conversationId ? 'bg-panel text-white' : 'text-muted hover:bg-panel'
+    }`}
+  >
+    <span className="truncate">{c.title}</span>
+    <button
+      onClick={(e) => handleDeleteConversation(e, c._id)}
+      className="opacity-0 group-hover:opacity-100 text-subtle hover:text-red-400 ml-2 shrink-0"
+    >
+      ✕
+    </button>
+  </div>
+))}
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 scrollbar-hide">
           {messages.length === 0 && (
             <div className="text-subtle text-sm text-center mt-20">
               Ask a question about your documents to get started.
@@ -167,7 +188,7 @@ function Chat() {
         </form>
       </div>
 
-      <div className="w-64 border-l border-border p-4">
+      <div className="w-64 border-l border-border p-4 h-screen overflow-y-auto scrollbar-hide">
         <h3 className="text-sm font-medium mb-3">Sources</h3>
         {!selectedSources || selectedSources.length === 0 ? (
           <p className="text-xs text-subtle">Ask a question to see cited sources here.</p>

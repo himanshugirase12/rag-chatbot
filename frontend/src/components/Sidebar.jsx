@@ -24,7 +24,7 @@ function Sidebar() {
   const questionsRemaining = user?.plan === 'pro' ? '∞' : 10 - (user?.questionsToday ?? 0);
 
   return (
-    <div className="w-56 bg-sidebar border-r border-border flex flex-col p-4 min-h-screen">
+    <div className="w-56 bg-sidebar border-r border-border flex flex-col p-4 h-screen overflow-hidden">
       <div className="flex items-center gap-2 text-white font-semibold text-base mb-8 px-1">
         <span className="text-accent">✦</span> RAG AI
       </div>
