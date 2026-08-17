@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 function Chat() {
   const { id: conversationId } = useParams();
@@ -13,6 +14,7 @@ function Chat() {
   const [error, setError] = useState('');
   const [selectedSources, setSelectedSources] = useState(null);
   const bottomRef = useRef(null);
+  const { refreshUser } = useAuth();
 
   const fetchConversations = async () => {
     const res = await api.get('/chat/conversations');
@@ -61,26 +63,27 @@ function Chat() {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!question.trim()) return;
-
+  
     setError('');
     const userMessage = { role: 'user', content: question, _id: Date.now() };
     setMessages((prev) => [...prev, userMessage]);
     const sentQuestion = question;
     setQuestion('');
     setSending(true);
-
+  
     try {
       const res = await api.post('/chat/ask', {
         question: sentQuestion,
         ...(conversationId && { conversationId }),
       });
-
+  
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: res.data.answer, sources: res.data.sources, _id: Date.now() + 1 },
       ]);
       setSelectedSources(res.data.sources);
-
+      refreshUser();
+  
       if (!conversationId) {
         navigate(`/chat/${res.data.conversationId}`);
         fetchConversations();
@@ -95,7 +98,6 @@ function Chat() {
       setSending(false);
     }
   };
-
   return (
     <div className="h-screen bg-bg flex overflow-hidden">   
       <Sidebar />
