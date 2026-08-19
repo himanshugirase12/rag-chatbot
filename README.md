@@ -2,10 +2,9 @@
 
 A full-stack MERN application that lets users upload documents (PDF, DOCX, TXT) and ask questions about them, with answers grounded in the actual document content and backed by source citations. Built as a second portfolio project to demonstrate practical AI/LLM integration skills beyond a standard CRUD app.
 
-**Live app:** https://rag-chatbot-pearl-two.vercel.app
-**Backend API:** https://rag-ai-j5tz.onrender.com
+**Live app:** https://rag-chatbot-pearl-two.vercel.app 
 
-> Note: the backend is hosted on Render's free tier, which spins down after inactivity. The first request after idle time may take 30–50 seconds while the server wakes up — this is a hosting limitation, not an application bug.
+**Backend API:** https://rag-ai-j5tz.onrender.com
 
 ---
 
