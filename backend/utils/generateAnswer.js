@@ -16,9 +16,10 @@ const generateAnswer = async (question, chunks) => {
 - Use numbered steps for processes or sequences
 - Use markdown code blocks for any code
 - Bold key terms where it aids scanning
-- For complexity notation, write plain text like O(n) or O(n^2) — do NOT use LaTeX syntax like $\mathcal{O}(n^2)$
+- NEVER use LaTeX or math notation. Do not wrap anything in dollar signs ($). Do not use \mathcal, \mathrm, or any backslash commands.
+- For time complexity, write it as plain inline text exactly like this: O(n) or O(n^2) or O(n log n) — with NO dollar signs and NO special formatting around it
 - Keep it concise — prioritize clarity over length
-  
+
   Context:
   ${context}
   

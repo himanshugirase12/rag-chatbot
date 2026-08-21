@@ -44,6 +44,10 @@ function Chat() {
     setSelectedSources(lastAssistant?.sources || null);
   };
 
+  const cleanMathNotation = (text) => {
+    return text.replace(/\$([^$]+)\$/g, '$1');
+  };
+
   useEffect(() => {
     fetchConversations();
   }, []);
@@ -148,7 +152,7 @@ function Chat() {
                   : 'self-start bg-panel border border-border rounded-2xl rounded-bl-sm px-4 py-3.5 max-w-[75%] text-sm'
               }
             >
-              <ReactMarkdown>{m.content}</ReactMarkdown>
+              <ReactMarkdown>{cleanMathNotation(m.content)}</ReactMarkdown>
               {m.sources?.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
                   {m.sources.map((s, i) => (
