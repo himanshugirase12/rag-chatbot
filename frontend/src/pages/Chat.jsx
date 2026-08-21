@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import ReactMarkdown from 'react-markdown';
 
 function Chat() {
   const { id: conversationId } = useParams();
@@ -147,7 +148,7 @@ function Chat() {
                   : 'self-start bg-panel border border-border rounded-2xl rounded-bl-sm px-4 py-3.5 max-w-[75%] text-sm'
               }
             >
-              {m.content}
+              <ReactMarkdown>{m.content}</ReactMarkdown>
               {m.sources?.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
                   {m.sources.map((s, i) => (

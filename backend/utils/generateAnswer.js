@@ -8,15 +8,22 @@ const generateAnswer = async (question, chunks) => {
     ? chunks.map((c, i) => `[Source ${i + 1}]: ${c.text}`).join('\n\n')
     : '';
 
-  const prompt = hasContext
+    const prompt = hasContext
     ? `You are a study assistant. Answer the question using ONLY the context below. If the question asks for an opinion or recommendation, you may summarize the relevant facts from the context to help the user decide, but do not invent facts not present in the context. If the context truly does not contain any information relevant to the question, respond with exactly: "NO_ANSWER_IN_DOCS"
-
-Context:
-${context}
-
-Question: ${question}
-
-Answer:`
+  
+  Format your answer clearly and readably:
+  - Use short paragraphs or bullet points, not one dense block of text
+  - Use numbered steps for processes or sequences
+  - Use markdown code blocks for any code
+  - Bold key terms where it aids scanning
+  - Keep it concise — prioritize clarity over length
+  
+  Context:
+  ${context}
+  
+  Question: ${question}
+  
+  Answer:`
     : '';
 
   const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
@@ -35,7 +42,8 @@ Answer:`
 };
 
 const generateGeneralAnswer = async (question, model) => {
-  const result = await model.generateContent(question);
+  const formattingInstruction = `Answer this question clearly and in a structured way — use short paragraphs, bullet points, or numbered steps where helpful, and bold key terms. Keep it concise.\n\nQuestion: ${question}`;
+  const result = await model.generateContent(formattingInstruction);
   const text = result.response.text();
   return {
     answer: `⚠️ I couldn't find this in your documents, but here's what I know generally:\n\n${text}`,
