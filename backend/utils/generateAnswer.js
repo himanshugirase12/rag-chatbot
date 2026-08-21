@@ -12,11 +12,12 @@ const generateAnswer = async (question, chunks) => {
     ? `You are a study assistant. Answer the question using ONLY the context below. If the question asks for an opinion or recommendation, you may summarize the relevant facts from the context to help the user decide, but do not invent facts not present in the context. If the context truly does not contain any information relevant to the question, respond with exactly: "NO_ANSWER_IN_DOCS"
   
   Format your answer clearly and readably:
-  - Use short paragraphs or bullet points, not one dense block of text
-  - Use numbered steps for processes or sequences
-  - Use markdown code blocks for any code
-  - Bold key terms where it aids scanning
-  - Keep it concise — prioritize clarity over length
+- Use short paragraphs or bullet points, not one dense block of text
+- Use numbered steps for processes or sequences
+- Use markdown code blocks for any code
+- Bold key terms where it aids scanning
+- For complexity notation, write plain text like O(n) or O(n^2) — do NOT use LaTeX syntax like $\mathcal{O}(n^2)$
+- Keep it concise — prioritize clarity over length
   
   Context:
   ${context}
